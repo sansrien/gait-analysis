@@ -26,7 +26,7 @@ csvFileName = "keypoints"+foldername+".csv"
 with open(csvFileName,'w', encoding='UTF8',newline='') as f: # this will OVERWRITE the existing file
     writer = csv.writer(f)
     #csv headers
-    header=['frame']
+    header=['frame','time']
 
     for joint in joints.values():
         header.append(joint+'_x')
@@ -41,7 +41,8 @@ with open(csvFileName,'w', encoding='UTF8',newline='') as f: # this will OVERWRI
         f = open(dir_location + '/' + filename)
         data = json.load(f)['people'][0]["pose_keypoints_2d"] #loaded as dictitionary -> gets the array of keypoints only
         #create list for row
-        row= [frame_ctr]
+        frame_time= frame_ctr
+        row= [frame_ctr,frame_time]
         for key in joints.keys():
             index=(key-1)*3
             row.append(data[index])
