@@ -33,7 +33,7 @@ def histogram_equalization(img_dir):
     cv.imshow('equalized image',output)
     cv.waitKey(0)
 
-#histogram_equalization("gait_sample.png")
+histogram_equalization("gait_sample.png")
 
 # cv.imshow('res.png', equ) #new image
 
