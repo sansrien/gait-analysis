@@ -19,10 +19,35 @@ dataRightH = [timeVector RightHX RightHY];
 
 % Create a table for display purposes
 tableLeftH = array2table(dataLeftH);
-tableLeftH.Properties.VariableNames(1:3) = {'Elapsed Time' 'Distance (x-coord)' 'Height (y-coord)'};
+tableLeftH.Properties.VariableNames(1:3) = {'Elapsed Time' 'Distance (x-coord)' 'Heel Location (y-coord)'};
 tableRightH = array2table(dataRightH);
-tableRightH.Properties.VariableNames(1:3) = {'Elapsed Time' 'Distance (x-coord)' 'Height (y-coord)'}
+tableRightH.Properties.VariableNames(1:3) = {'Elapsed Time' 'Distance (x-coord)' 'Heel Location (y-coord)'};
 
 
 %% Create function to get gait cycles
+% get peaks to get local minima and store in a vector
+    % coordinate system: upper left = origin
+    % y-coord: higher number, lower height
+    % x-coord: higher number, farther distance from origin
+[pks, locs] = findpeaks(dataLeftH(:,3));
+
+
+% create Mx2 matrix where M is the number of gait cycles while the columns 
+% indicate the two heel strike points for each gait cycle
+gaitCycles = zeros(length(pks)-1, 2);
+for i = 1:length(pks)
+    if i ~= length(pks)
+        gaitCycles(i,1) = pks(i);
+        gaitCycles(i,2) = pks(i+1);
+    end
+end
+
+% create a variable for number of gait cycles
+numGaitCycle = length(gaitCycles);
+
+
+
+    
+
+
 
