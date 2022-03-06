@@ -4,7 +4,7 @@ import os
 import csv
 foldername= str(input("Foldername where the json files are located")) #change to folder name 
 #dir_location="examples/output/" + foldername #change to frames directory
-dir_location="sample_json" #change this line
+dir_location="1" #change this line
 frame_count= len(os.listdir(dir_location))
 
 joints={
