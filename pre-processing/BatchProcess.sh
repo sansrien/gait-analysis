@@ -8,3 +8,4 @@ do
 done
 
 bin/openposedemo.exe -video "examples/mediarun/1.avi" --logging_level 0 --net_resolution "-320x160" --keypoint_scale '3' --write_json "examples/output_norm/1/" --write_video "examples/output_norm/1vid.avi" 
+bin/openposedemo.exe -video "examples/vid_out.avi" --logging_level 0 --net_resolution "-320x160" --keypoint_scale '3' --write_json "examples/output_postprocess/1/" --write_video "examples/output_postprocess/1vid.avi"
