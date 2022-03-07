@@ -1,5 +1,5 @@
 %% Read input file from pre-processing
-dataTable = readtable('keypointssample_json.csv');
+dataTable = readtable('switched_keypoints.csv');
 dataTable.Properties.VariableNames; %to display variable names from file
 
 %% Create time vector
@@ -57,12 +57,19 @@ for i = 1:length(pksR)
     end
 end
 
+
+% Create a table for display purposes
+tableLHS = array2table(gaitCyclesL);
+tableLHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (y-coord)' 'Final Heel Strike (y-coord)'};
+tableRHS = array2table(gaitCyclesR);
+tableRHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (y-coord)' 'Final Heel Strike (y-coord)'};
+
+
 % create a variable for number of gait cycles
 numGaitCycleL = length(gaitCyclesL);
 numGaitCycleR = length(gaitCyclesR);
 
 %% Calculation of Temporal Parameters
-
 % Get time associated with all heel strikes
 leftHeelTime = zeros(length(pksL)-1, 2);
 for i = 1:length(gaitCyclesL)
@@ -93,20 +100,20 @@ avgStepTimeL = mean(leftStrideTime);
 
 rightStrideTime = [];
 for i = 1:length(rightHeelTime(:,1))
-    rightStrideTime(i) = rightHeelTime(i,2) - leftHeelTime(i,1);
+    rightStrideTime(i) = rightHeelTime(i,2) - rightHeelTime(i,1);
 end
 
 rightStrideTime = rightStrideTime.';
 avgStepTimeR = mean(rightStrideTime);
 
 % Step Time //not correct pa ata?
-leftStepTime = [];
-for i = 1:length(rightHeelTime(:,1))
-    leftStepTime(i) = leftHeelTime(i,2) - rightHeelTime(i,1);
-end
-
-leftStepTime = leftStepTime.';
-avgStepTime = mean(leftStepTime);
+% leftStepTime = [];
+% for i = 1:length(rightHeelTime(:,1))
+%     leftStepTime(i) = leftHeelTime(i,2) - rightHeelTime(i,1);
+% end
+% 
+% leftStepTime = leftStepTime.';
+% avgStepTime = mean(leftStepTime);
 
 % Cadence
 cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
