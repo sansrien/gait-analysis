@@ -42,27 +42,28 @@ rightH.xLoc = dataRightH(:,3);
 
 % create Mx2 matrix where M is the number of gait cycles while the columns 
 % indicate the two heel strike points for each gait cycle
-gaitCyclesL = zeros(length(pksL)-1, 2);
+gaitCyclesL = cell(length(pksL)-1, 2);
 for i = 1:length(pksL)
     if i ~= length(pksL)
-        gaitCyclesL(i,1) = pksL(i);
-        gaitCyclesL(i,2) = pksL(i+1);
+        gaitCyclesL{i,1} = [pksL(i) leftH.yLoc(locsL(i))];
+        gaitCyclesL{i,2} = [pksL(i+1) leftH.yLoc(locsL(i+1))];
     end
 end
 
+gaitCyclesR = cell(length(pksR)-1, 2);
 for i = 1:length(pksR)
     if i ~= length(pksR)
-        gaitCyclesR(i,1) = pksR(i);
-        gaitCyclesR(i,2) = pksR(i+1);
+        gaitCyclesR{i,1} = [pksR(i) rightH.yLoc(locsR(i))];
+        gaitCyclesR{i,2} = [pksR(i+1) rightH.yLoc(locsR(i+1))];
     end
 end
 
 
 % Create a table for display purposes
 tableLHS = array2table(gaitCyclesL);
-tableLHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (y-coord)' 'Final Heel Strike (y-coord)'};
+tableLHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (x,y)' 'Final Heel Strike (x,y)'};
 tableRHS = array2table(gaitCyclesR);
-tableRHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (y-coord)' 'Final Heel Strike (y-coord)'};
+tableRHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (x,y)' 'Final Heel Strike (x,y)'};
 
 
 % create a variable for number of gait cycles
@@ -71,52 +72,52 @@ numGaitCycleR = length(gaitCyclesR);
 
 %% Calculation of Temporal Parameters
 % Get time associated with all heel strikes
-leftHeelTime = zeros(length(pksL)-1, 2);
-for i = 1:length(gaitCyclesL)
-    for j = 1:2
-        curr = gaitCyclesL(i,j);
-        currTimeIdx = find(dataLeftH(:,3) == curr);
-        leftHeelTime(i,j) = dataLeftH(currTimeIdx, 1); 
-    end
-end
-
-rightHeelTime = zeros(length(pksR)-1, 2);
-for i = 1:length(gaitCyclesR)
-    for j = 1:2
-        curr = gaitCyclesR(i,j);
-        currTimeIdx = find(dataRightH(:,3) == curr);
-        rightHeelTime(i,j) = dataRightH(currTimeIdx, 1); 
-    end
-end
-
-% Stride Time
-leftStrideTime = [];
-for i = 1:length(leftHeelTime(:,1))
-    leftStrideTime(i) = leftHeelTime(i,2) - leftHeelTime(i,1);
-end
-
-leftStrideTime = leftStrideTime.';
-avgStepTimeL = mean(leftStrideTime);
-
-rightStrideTime = [];
-for i = 1:length(rightHeelTime(:,1))
-    rightStrideTime(i) = rightHeelTime(i,2) - rightHeelTime(i,1);
-end
-
-rightStrideTime = rightStrideTime.';
-avgStepTimeR = mean(rightStrideTime);
-
-% Step Time //not correct pa ata?
-% leftStepTime = [];
-% for i = 1:length(rightHeelTime(:,1))
-%     leftStepTime(i) = leftHeelTime(i,2) - rightHeelTime(i,1);
+% leftHeelTime = zeros(length(pksL)-1, 2);
+% for i = 1:length(gaitCyclesL)
+%     for j = 1:2
+%         curr = gaitCyclesL(i,j);
+%         currTimeIdx = find(dataLeftH(:,3) == curr);
+%         leftHeelTime(i,j) = dataLeftH(currTimeIdx, 1); 
+%     end
 % end
 % 
-% leftStepTime = leftStepTime.';
-% avgStepTime = mean(leftStepTime);
-
-% Cadence
-cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
+% rightHeelTime = zeros(length(pksR)-1, 2);
+% for i = 1:length(gaitCyclesR)
+%     for j = 1:2
+%         curr = gaitCyclesR(i,j);
+%         currTimeIdx = find(dataRightH(:,3) == curr);
+%         rightHeelTime(i,j) = dataRightH(currTimeIdx, 1); 
+%     end
+% end
+% 
+% % Stride Time
+% leftStrideTime = [];
+% for i = 1:length(leftHeelTime(:,1))
+%     leftStrideTime(i) = leftHeelTime(i,2) - leftHeelTime(i,1);
+% end
+% 
+% leftStrideTime = leftStrideTime.';
+% avgStepTimeL = mean(leftStrideTime);
+% 
+% rightStrideTime = [];
+% for i = 1:length(rightHeelTime(:,1))
+%     rightStrideTime(i) = rightHeelTime(i,2) - rightHeelTime(i,1);
+% end
+% 
+% rightStrideTime = rightStrideTime.';
+% avgStepTimeR = mean(rightStrideTime);
+% 
+% % Step Time //not correct pa ata?
+% % leftStepTime = [];
+% % for i = 1:length(rightHeelTime(:,1))
+% %     leftStepTime(i) = leftHeelTime(i,2) - rightHeelTime(i,1);
+% % end
+% % 
+% % leftStepTime = leftStepTime.';
+% % avgStepTime = mean(leftStepTime);
+% 
+% % Cadence
+% cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
 
 
 
