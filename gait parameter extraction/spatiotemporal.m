@@ -84,8 +84,6 @@ meanR = mean(pksR);
 threshR = 0.40*meanR; % > 40% threshold from https://www.frontiersin.org/articles/10.3389/fneur.2017.00457/full#F3
 [pksR, locsR] = findpeaks(rightH.yLoc, 'MinPeakHeight', threshR, 'MinPeakDistance', sampFreq);
 
-
-
 % test plots for heel locations
 subplot(2,1,1)
 plot(leftH.time, leftH.yLoc)
@@ -106,8 +104,6 @@ ylabel('Heel Location (y-coord)')
 xlabel('Time (seconds)')
 legend('Heel Data Point', 'Heel Strikes')
 title('Right Leg Heel Location')
-
-
 
 
 % create Mx2 matrix where M is the number of gait cycles while the columns 
@@ -144,43 +140,39 @@ numGaitCycleR = length(gaitCyclesR);
 %% Calculation of Temporal Parameters
 % Get time associated with all heel strikes
 
-% leftHeelTime = zeros(length(pksL)-1, 2);
-% for i = 1:length(gaitCyclesL)
-%     for j = 1:2
-%         curr = gaitCyclesL{i,j}(2);
-%         currTimeIdx = find(leftH.yLoc == curr);
-%         if leftH.time(currTimeIdx) > 1
-%             leftHeelTime(i,j) = leftH.time(currTimeIdx);
-%         end
-%     end
-% end
+leftHeelTime = zeros(length(locsL)-1, 2);
+for i = 1:length(locsL)
+    if i ~= length(locsL)
+        leftHeelTime(i,1) = leftH.time(locsL(i));
+        leftHeelTime(i,2) = leftH.time(locsL(i+1));
+    end
+end
 
-% rightHeelTime = zeros(length(pksR)-1, 2);
-% for i = 1:length(gaitCyclesR)
-%     for j = 1:2
-%         curr = gaitCyclesR{i,j}(2);
-%         currTimeIdx = find(rightH.yLoc == curr);
-%         rightHeelTime(i,j) = rightH.time(currTimeIdx); 
-%     end
-% end
-% 
-% 
-% % Stride Time
-% leftStrideTime = [];
-% for i = 1:length(leftHeelTime(:,1))
-%     leftStrideTime(i) = leftHeelTime(i,2) - leftHeelTime(i,1);
-% end
-% 
-% leftStrideTime = leftStrideTime.';
-% avgStepTimeL = mean(leftStrideTime);
-% 
-% rightStrideTime = [];
-% for i = 1:length(rightHeelTime(:,1))
-%     rightStrideTime(i) = rightHeelTime(i,2) - rightHeelTime(i,1);
-% end
-% 
-% rightStrideTime = rightStrideTime.';
-% avgStepTimeR = mean(rightStrideTime);
+rightHeelTime = zeros(length(locsR)-1, 2);
+for i = 1:length(locsR)
+    if i ~= length(locsR)
+        rightHeelTime(i,1) = rightH.time(locsR(i));
+        rightHeelTime(i,2) = rightH.time(locsR(i+1));
+    end
+end
+
+
+% Stride Time
+leftStrideTime = [];
+for i = 1:length(leftHeelTime(:,1))
+    leftStrideTime(i) = leftHeelTime(i,2) - leftHeelTime(i,1);
+end
+
+leftStrideTime = leftStrideTime.';
+avgStepTimeL = mean(leftStrideTime)
+
+rightStrideTime = [];
+for i = 1:length(rightHeelTime(:,1))
+    rightStrideTime(i) = rightHeelTime(i,2) - rightHeelTime(i,1);
+end
+
+rightStrideTime = rightStrideTime.';
+avgStepTimeR = mean(rightStrideTime)
 
 % % Step Time //not correct pa ata?
 % % leftStepTime = [];
@@ -198,25 +190,6 @@ numGaitCycleR = length(gaitCyclesR);
 
 
 
-
-%% try lang kineme
-% create Mx2 matrix where M is the number of gait cycles while the columns 
-% indicate the two heel strike points for each gait cycle
-%gaitCycles2 = zeros(length(pks)-1, 2);
-% for i = 1:length(pks)
-%     if i ~= length(pks)
-%         test.time(i) = leftH.time(locs(i));
-%         test.xLoc(i) = leftH.xLoc(locs(i));
-%         test.yLoc(i) = leftH.yLoc(locs(i));
-%     end
-% end
-% 
-% % create a variable for number of gait cycles
-% numGaitCycle2 = length(test);
-
-
-
-    
 
 
 
