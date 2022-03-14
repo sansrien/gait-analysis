@@ -1,0 +1,49 @@
+classdef KF < handle
+    properties(Access = public)
+        X   % state vector
+        a   % acceleration variance
+        P   % covariance of state
+    end
+    methods
+        function predict(obj,dt)
+            F = [1 0 dt 0;
+                 0 1 0 dt;
+                 0 0 1 0;
+                 0 0 0 1];
+            new_X = F*obj.X;
+            G=transpose([0.5*dt^2, 0.5*dt^2, dt, dt]);
+            new_P = (F*obj.P*transpose(F)) + (G*transpose(G)*obj.a);
+            obj.P = new_P;
+            obj.X= new_X;
+            
+        end
+        function update(obj,Z,R)
+            H = [1 0 0 0;
+                0 1 0 0];
+            %Z
+            %R
+            Y = Z-(H*obj.X);
+            S = H*obj.P*transpose(H) + R;
+            K= obj.P*transpose(H)*inverse(S);
+            new_X = obj.x + K*Y;
+            new_P = (identity(4) -K*H)*obj.P; % not sure w/ identity matrix size
+            obj.P = new_P;
+            obj.X = new_X;
+            
+            
+        end
+        function initialize(obj, x, y, v_x, v_y, P)
+            obj.X = transpose([x y v_x v_y])
+            obj.P = P
+            
+            
+        end
+%         function increment(obj,inc)
+%             obj.ctr = obj.ctr+inc;
+%         end
+%         function start(obj)
+%             obj.ctr = 1;
+%         end
+    end
+end  
+        
