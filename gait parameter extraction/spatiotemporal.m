@@ -1,7 +1,7 @@
 clear all;
 
 %% Read input file from pre-processing
-dataTable = readtable('switched_colab_keypoints.csv');
+dataTable = readtable('switched_colab_fixed.csv');
 dataTable.Properties.VariableNames; %to display variable names from file
 
 %% Create time vector
@@ -106,38 +106,50 @@ sampFreq = (length(timeVector))/(timeVector(length(timeVector)));
     % coordinate system: upper left = origin
     % y-coord: higher number, lower height
     % x-coord: higher number, farther distance from origin
-[pksL, locsL] = findpeaks(leftH.yLoc);
-[pksR, locsR] = findpeaks(rightH.yLoc);
+[pksL, locsL] = findpeaks(leftH.yLocN);
+[pksR, locsR] = findpeaks(rightH.yLocN);
 
 % use findpeaks() with height and distance thresholds
 meanL = mean(pksL);
 threshL = 0.40*meanL; % > 40% threshold from https://www.frontiersin.org/articles/10.3389/fneur.2017.00457/full#F3
-[pksL, locsL] = findpeaks(leftH.yLoc, 'MinPeakHeight', threshL, 'MinPeakDistance', sampFreq);
+[pksL, locsL] = findpeaks(leftH.yLocN, 'MinPeakHeight', threshL, 'MinPeakDistance', sampFreq);
 
 meanR = mean(pksR);
 threshR = 0.40*meanR; % > 40% threshold from https://www.frontiersin.org/articles/10.3389/fneur.2017.00457/full#F3
-[pksR, locsR] = findpeaks(rightH.yLoc, 'MinPeakHeight', threshR, 'MinPeakDistance', sampFreq);
+[pksR, locsR] = findpeaks(rightH.yLocN, 'MinPeakHeight', threshR, 'MinPeakDistance', sampFreq);
 
 % test plots for heel locations
-subplot(2,1,1)
+subplot(2,2,1)
 plot(leftH.time, leftH.yLoc)
+ylabel('Heel Location (y-coord)')
+xlabel('Time (seconds)')
+title('Left Heel Location')
+
+subplot(2,2,2)
+plot(leftH.time, leftH.yLocN)
 hold on
 scatter(leftH.time(locsL), pksL, '*')
 hold off
 ylabel('Heel Location (y-coord)')
 xlabel('Time (seconds)')
 legend('Heel Data Point', 'Heel Strikes')
-title('Left Leg Heel Location')
+title('Filtered Left Heel Location')
 
-subplot(2,1,2)
+subplot(2,2,3)
 plot(rightH.time, rightH.yLoc)
+ylabel('Heel Location (y-coord)')
+xlabel('Time (seconds)')
+title('Right Heel Location')
+
+subplot(2,2,4)
+plot(rightH.time, rightH.yLocN)
 hold on
 scatter(rightH.time(locsR), pksR, '*')
 hold off
 ylabel('Heel Location (y-coord)')
 xlabel('Time (seconds)')
 legend('Heel Data Point', 'Heel Strikes')
-title('Right Leg Heel Location')
+title('Filtered Right Heel Location')
 
 
 % create Mx2 matrix where M is the number of gait cycles while the columns 
@@ -191,14 +203,14 @@ for i = 1:length(locsR)
 end
 
 
-% Stride Time
+%% Stride Time
 leftStrideTime = [];
 for i = 1:length(leftHeelTime(:,1))
     leftStrideTime(i) = leftHeelTime(i,2) - leftHeelTime(i,1);
 end
 
 leftStrideTime = leftStrideTime.';
-avgStepTimeL = mean(leftStrideTime)
+avgStrideTimeL = mean(leftStrideTime);
 
 rightStrideTime = [];
 for i = 1:length(rightHeelTime(:,1))
@@ -206,19 +218,40 @@ for i = 1:length(rightHeelTime(:,1))
 end
 
 rightStrideTime = rightStrideTime.';
-avgStepTimeR = mean(rightStrideTime)
+avgStrideTimeR = mean(rightStrideTime);
 
-% % Step Time //not correct pa ata?
-% % leftStepTime = [];
-% % for i = 1:length(rightHeelTime(:,1))
-% %     leftStepTime(i) = leftHeelTime(i,2) - rightHeelTime(i,1);
-% % end
-% % 
-% % leftStepTime = leftStepTime.';
-% % avgStepTime = mean(leftStepTime);
-% 
-% % Cadence
-% cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
+
+%% Step Time //not correct pa ata?
+leftStepTime = [];
+for i = 1:length(rightHeelTime(:,1))
+    leftStepTime(i) = leftHeelTime(i,1) - rightHeelTime(i,1);
+end
+
+leftStepTime = leftStepTime.';
+avgStepTimeL = mean(leftStepTime);
+
+
+rightStepTime = [];
+for i = 1:length(leftHeelTime(:,1))
+    rightStepTime(i) = rightHeelTime(i,1) - leftHeelTime(i,1);
+end
+
+rightStepTime = rightStepTime.';
+avgStepTimeR = mean(leftStepTime);
+
+%% Cadence
+cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
+
+
+% Create a table for display purposes
+tempParams = [leftStrideTime rightStrideTime leftStepTime rightStepTime];
+tableTempParams = array2table(tempParams);
+tableTempParams.Properties.VariableNames(1:4) = {'Left Stride Time' 'Right Stride Time', 'Left Step Time', 'Right Step Time'};
+avgTempParams = [avgStrideTimeL avgStrideTimeR avgStepTimeL avgStepTimeR cadence];
+tableAvgTempParams = array2table(avgTempParams);
+tableAvgTempParams.Properties.VariableNames(1:5) = {'Left Stride Time' 'Right Stride Time', 'Left Step Time', 'Right Step Time', 'Cadence'};
+
+
 
 
 
