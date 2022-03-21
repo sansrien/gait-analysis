@@ -1,7 +1,7 @@
 clear all;
 
 %% Read input file from pre-processing
-dataTable = readtable('switched_keypoints.csv');
+dataTable = readtable('switched_colab_keypoints.csv');
 dataTable.Properties.VariableNames; %to display variable names from file
 
 %% Create time vector
@@ -63,6 +63,40 @@ leftH.xLoc = dataLeftH(:,2);
 rightH.time = dataRightH(:,1);
 rightH.yLoc = dataRightH(:,3);
 rightH.xLoc = dataRightH(:,2);
+
+
+%% Pre-processing of heel location plot
+% Get fundamental frequency using FFT
+fs = length(timeVector)/timeVector(end);
+t = timeVector;
+step = timeVector(2)-timeVector(1);
+
+n = pow2(nextpow2(length(leftH.yLoc)));
+y = fft(leftH.yLoc,n);
+f = (0:n-1)*(fs/n);
+power = abs(y);
+
+
+% Implement filtering of lowpass, zero phase, butterworth filter 
+cf = 6;
+sampFreq = (length(timeVector))/(timeVector(length(timeVector)));
+Wn = cf/sampFreq;
+[b,a] = butter(2, Wn, 'low');
+
+leftH.yLocN = filtfilt(b, a, leftH.yLoc);
+rightH.yLocN = filtfilt(b, a, rightH.yLoc);
+
+% subplot(2,1,1)
+% plot(leftH.time, leftH.yLocN)
+% ylabel('Heel Location (y-coord)')
+% xlabel('Time (seconds)')
+% title('Filtered Left Leg Heel Location')
+% subplot(2,1,2)
+% plot(leftH.time, leftH.yLoc)
+% ylabel('Heel Location (y-coord)')
+% xlabel('Time (seconds)')
+% title('Original Left Leg Heel Location')
+
 
 %% Create function to get gait cycles
 % Get the frame rate
