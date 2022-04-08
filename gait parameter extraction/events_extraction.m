@@ -136,9 +136,9 @@ end
 
 data_extracted.time = timeVector;
 data_extracted.left = gaitCyclesL;
-data_extracted.right = gaitCyclesR;
+data_extracted.right = gaitCysclesR;
 
-save('gait_events.mat','data_extracted')
+save('gait_events.mat','data_extracted', 'locsL', 'locsR')
 
 clearvars -except gait_events
 
