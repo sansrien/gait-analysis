@@ -3,9 +3,12 @@ clearvars -except gait_events;
 
 file = sprintf('%s%s','gait_events.mat');
 cd = pwd;
-load(fullfile(cd,file),'data_extracted')
+load(fullfile(cd,file),'data_extracted');
 
 timeVector = data_extracted.time;
+locsL = data_extracted.locsL;
+locsR = data_extracted.locsR;
+
 
 %% Calculation of Temporal Parameters
 % Get time associated with all heel strikes
@@ -77,11 +80,11 @@ tableAvgTempParams.Properties.VariableNames(1:5) = {'Left Stride Time' 'Right St
 
 
 %% Storing into variables for return
-temporal_parameters.leftStrideTime;
-temporal_parameters.rightStrideTime;
-temporal_parameters.leftStepTime;
-temporal_parameters.rightStepTime;
-temporal_parameters.cadence;
+temporal_parameters.leftStrideTime = leftStrideTime;
+temporal_parameters.rightStrideTime = rightStrideTime;
+temporal_parameters.leftStepTime = leftStepTime;
+temporal_parameters.rightStepTime = rightStepTime;
+temporal_parameters.cadence = cadence;
 
 save('gait_events.mat','data_extracted','temporal_parameters', 'locsL', 'locsR')
 
