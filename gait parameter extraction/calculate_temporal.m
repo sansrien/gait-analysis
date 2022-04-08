@@ -83,6 +83,6 @@ temporal_parameters.leftStepTime;
 temporal_parameters.rightStepTime;
 temporal_parameters.cadence;
 
-save('gait_events.mat','data_extracted','temporal_parameters')
+save('gait_events.mat','data_extracted','temporal_parameters', 'locsL', 'locsR')
 
 clearvars -except gait_events
