@@ -78,10 +78,10 @@ power = abs(y);
 
 
 % Implement filtering of lowpass, zero phase, butterworth filter 
-cf = 6;
+cf = 10;
 sampFreq = (length(timeVector))/(timeVector(length(timeVector)));
 Wn = cf/sampFreq;
-[b,a] = butter(2, Wn, 'low');
+[b,a] = butter(4, Wn, 'low');
 
 leftH.yLocN = filtfilt(b, a, leftH.yLoc);
 rightH.yLocN = filtfilt(b, a, rightH.yLoc);
@@ -117,6 +117,12 @@ threshL = 0.40*meanL; % > 40% threshold from https://www.frontiersin.org/article
 meanR = mean(pksR);
 threshR = 0.40*meanR; % > 40% threshold from https://www.frontiersin.org/articles/10.3389/fneur.2017.00457/full#F3
 [pksR, locsR] = findpeaks(rightH.yLocN, 'MinPeakHeight', threshR, 'MinPeakDistance', sampFreq);
+
+% firstStep = locsL(1);
+% lastTime = timeVector(end);
+% 
+% inRange = locsR > firstStep & locsR < length(rightH.yLoc);
+% pksR = pksR(inRange);
 
 % test plots for heel locations
 subplot(2,2,1)
@@ -203,7 +209,7 @@ for i = 1:length(locsR)
 end
 
 
-%% Stride Time
+%% Stride Time - OK
 leftStrideTime = [];
 for i = 1:length(leftHeelTime(:,1))
     leftStrideTime(i) = leftHeelTime(i,2) - leftHeelTime(i,1);
@@ -224,7 +230,7 @@ avgStrideTimeR = mean(rightStrideTime);
 %% Step Time //not correct pa ata?
 leftStepTime = [];
 for i = 1:length(rightHeelTime(:,1))
-    leftStepTime(i) = leftHeelTime(i,1) - rightHeelTime(i,1);
+    leftStepTime(i) = leftHeelTime(i,2) - rightHeelTime(i,1);
 end
 
 leftStepTime = leftStepTime.';
@@ -233,11 +239,11 @@ avgStepTimeL = mean(leftStepTime);
 
 rightStepTime = [];
 for i = 1:length(leftHeelTime(:,1))
-    rightStepTime(i) = rightHeelTime(i,1) - leftHeelTime(i,1);
+    rightStepTime(i) = rightHeelTime(i,2) - leftHeelTime(i,1);
 end
 
 rightStepTime = rightStepTime.';
-avgStepTimeR = mean(leftStepTime);
+avgStepTimeR = mean(rightStepTime);
 
 %% Cadence
 cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
@@ -251,12 +257,9 @@ avgTempParams = [avgStrideTimeL avgStrideTimeR avgStepTimeL avgStepTimeR cadence
 tableAvgTempParams = array2table(avgTempParams);
 tableAvgTempParams.Properties.VariableNames(1:5) = {'Left Stride Time' 'Right Stride Time', 'Left Step Time', 'Right Step Time', 'Cadence'};
 
-
-
-
-
-
-
-
-
-
+%% Storing into variables for return
+% temporal_parameters.leftStrideTime;
+% temporal_parameters.rightStrideTime;
+% temporal_parameters.leftStepTime;
+% temporal_parameters.rightStepTime;
+% temporal_parameters.cadence;
