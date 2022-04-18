@@ -88,6 +88,7 @@ avgTempParams = [avgStrideTimeL avgStrideTimeR avgStepTimeL avgStepTimeR cadence
 tableAvgTempParams = array2table(avgTempParams);
 tableAvgTempParams.Properties.VariableNames(1:5) = {'Left Stride Time' 'Right Stride Time', 'Left Step Time', 'Right Step Time', 'Cadence'};
 
+tableAvgTempParams
 
 %% Storing into variables for return
 temporal_parameters.leftStrideTime = leftStrideTime;
@@ -97,6 +98,9 @@ temporal_parameters.rightStepTime = rightStepTime;
 temporal_parameters.cadence = cadence;
 gait_speed.left = leftGaitSpeed;
 gait_speed.right = rightGaitSpeed;
+
+fprintf('Left Gait Speed: %f m/s \r\n',gait_speed.left)
+fprintf('Right Gait Speed: %f m/s',gait_speed.right)
 
 save('gait_events.mat','data_extracted','temporal_parameters', 'gait_speed', 'locsL', 'locsR')
 
