@@ -3,11 +3,13 @@ clearvars -except gait_events;
 
 file = sprintf('%s%s','gait_events.mat');
 cd = pwd;
-load(fullfile(cd,file),'data_extracted');
+load(fullfile(cd,file),'data_extracted', 'spatial_parameters');
 
 timeVector = data_extracted.time;
 locsL = data_extracted.locsL;
 locsR = data_extracted.locsR;
+leftStepLength = spatial_parameters.leftsteplength;
+rightStepLength = spatial_parameters.rightsteplength;
 
 
 %% Calculation of Temporal Parameters
@@ -48,7 +50,7 @@ rightStrideTime = rightStrideTime.';
 avgStrideTimeR = mean(rightStrideTime);
 
 
-%% Step Time //not correct pa ata?
+%% Step Time
 leftStepTime = [];
 for i = 1:length(rightHeelTime(:,1))
     leftStepTime(i) = leftHeelTime(i,2) - rightHeelTime(i,1);
@@ -70,6 +72,14 @@ avgStepTimeR = mean(rightStepTime);
 cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
 
 
+%% Gait Speed
+avgStepLengthL = mean(leftStepLength);
+avgStepLengthR = mean(rightStepLength);
+
+leftGaitSpeed = avgStepLengthL/avgStepTimeL;
+rightGaitSpeed = avgStepLengthR/avgStepTimeR;
+
+
 % Create a table for display purposes
 tempParams = [leftStrideTime rightStrideTime leftStepTime rightStepTime];
 tableTempParams = array2table(tempParams);
@@ -85,7 +95,9 @@ temporal_parameters.rightStrideTime = rightStrideTime;
 temporal_parameters.leftStepTime = leftStepTime;
 temporal_parameters.rightStepTime = rightStepTime;
 temporal_parameters.cadence = cadence;
+gait_speed.left = leftGaitSpeed;
+gait_speed.right = rightGaitSpeed;
 
-save('gait_events.mat','data_extracted','temporal_parameters', 'locsL', 'locsR')
+save('gait_events.mat','data_extracted','temporal_parameters', 'gait_speed', 'locsL', 'locsR')
 
 clearvars -except gait_events
