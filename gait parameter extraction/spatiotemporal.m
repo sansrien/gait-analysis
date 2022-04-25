@@ -66,37 +66,13 @@ rightH.xLoc = dataRightH(:,2);
 
 
 %% Pre-processing of heel location plot
-% Get fundamental frequency using FFT
-fs = length(timeVector)/timeVector(end);
-t = timeVector;
-step = timeVector(2)-timeVector(1);
-
-n = pow2(nextpow2(length(leftH.yLoc)));
-y = fft(leftH.yLoc,n);
-f = (0:n-1)*(fs/n);
-power = abs(y);
-
-
 % Implement filtering of lowpass, zero phase, butterworth filter 
-cf = 10;
-sampFreq = (length(timeVector))/(timeVector(length(timeVector)));
-Wn = cf/sampFreq;
-[b,a] = butter(4, Wn, 'low');
-
-leftH.yLocN = filtfilt(b, a, leftH.yLoc);
-rightH.yLocN = filtfilt(b, a, rightH.yLoc);
-
-% subplot(2,1,1)
-% plot(leftH.time, leftH.yLocN)
-% ylabel('Heel Location (y-coord)')
-% xlabel('Time (seconds)')
-% title('Filtered Left Leg Heel Location')
-% subplot(2,1,2)
-% plot(leftH.time, leftH.yLoc)
-% ylabel('Heel Location (y-coord)')
-% xlabel('Time (seconds)')
-% title('Original Left Leg Heel Location')
-
+fs = (length(timeVector))/(timeVector(length(timeVector)));
+fc = 10;    %from RRL
+Wn = fc/fs;
+[B, A] = butter(4,Wn,'low');
+leftH.yLocN = filtfilt(B,A,leftH.yLoc);
+rightH.yLocN = filtfilt(B,A,rightH.yLoc);
 
 %% Create function to get gait cycles
 % Get the frame rate
@@ -116,13 +92,12 @@ threshL = 0.40*meanL; % > 40% threshold from https://www.frontiersin.org/article
 
 meanR = mean(pksR);
 threshR = 0.40*meanR; % > 40% threshold from https://www.frontiersin.org/articles/10.3389/fneur.2017.00457/full#F3
-[pksR, locsR] = findpeaks(rightH.yLocN, 'MinPeakHeight', threshR, 'MinPeakDistance', sampFreq);
+[pksR, locsR] = findpeaks(rightH.yLocN(locsL(1):end), 'MinPeakDistance', sampFreq, 'NPeaks', 5);
+locsR = locsR + (locsL(1)-1);
 
-% firstStep = locsL(1);
-% lastTime = timeVector(end);
-% 
-% inRange = locsR > firstStep & locsR < length(rightH.yLoc);
-% pksR = pksR(inRange);
+ofst = locsR(end)+(round(sampFreq)-1);                                                
+[pksR(end+1),locsR(end+1)] = max(rightH.yLocN(ofst:end)); 
+locsR(end) = locsR(end) + ofst;
 
 % test plots for heel locations
 subplot(2,2,1)
@@ -239,7 +214,7 @@ avgStepTimeL = mean(leftStepTime);
 
 rightStepTime = [];
 for i = 1:length(leftHeelTime(:,1))
-    rightStepTime(i) = rightHeelTime(i,2) - leftHeelTime(i,1);
+    rightStepTime(i) = rightHeelTime(i,1) - leftHeelTime(i,1);
 end
 
 rightStepTime = rightStepTime.';
