@@ -232,6 +232,8 @@ avgTempParams = [avgStrideTimeL avgStrideTimeR avgStepTimeL avgStepTimeR cadence
 tableAvgTempParams = array2table(avgTempParams);
 tableAvgTempParams.Properties.VariableNames(1:5) = {'Left Stride Time' 'Right Stride Time', 'Left Step Time', 'Right Step Time', 'Cadence'};
 
+tableAvgTempParams
+
 %% Storing into variables for return
 % temporal_parameters.leftStrideTime;
 % temporal_parameters.rightStrideTime;
