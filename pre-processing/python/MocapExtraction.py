@@ -9,18 +9,47 @@ start_frame=int(input("Enter start frame:"))*4 # 1-indexing
 print(start_frame)
 #joints dictionary
 joints={
-    1:"CLAV",
-    2:"LASI",
-    3:"RASI",
-    4:"LKNE",
-    5:"LANK",
-    6:"LHEE",
-    7:"LTOE",
-    8:"RKNE",
-    9:"RANK",
-    10:"RHEE",
-    11:"RTOE",
-    12:"spine-hip"
+    1:"LFHD",
+    2:"RFHD",
+    3:"LBHD",
+    4:"RBHD",
+    5:"C7",
+    6:"T10",
+    7:"CLAV",
+    8:"STRN",
+    9:"RBAK",
+    10:"LSHO",
+    11:"LUPA",
+    12:"LELB",
+    13:"LFRM",
+    14:"LWRA",
+    15:"LWRB",
+    16:"LFIN",
+    17:"RSHO",
+    18:"RUPA",
+    19:"RELB",
+    20:"RFRM",
+    21:"RWRA",
+    22:"RWRB",
+    23:"RFIN",
+    24:"LASI",
+    25:"RASI",
+    26:"LPSI",
+    27:"RPSI",
+    28:"LTHI",
+    29:"LKNE",
+    30:"LTIB",
+    31:"LANK",
+    32:"LHEE",
+    33:"LTOE",
+    34:"RTHI",
+    35:"RKNE",
+    36:"RTIB",
+    37:"RANK",
+    38:"RHEE",
+    39:"RTOE",
+    40:"spine-hip",
+    41:"middle-neck"
 }
 
 csvFileName = "mocap_"+ filename+".csv" #change
@@ -56,11 +85,18 @@ with open(csvFileName,'w', encoding='UTF8',newline='') as f:
                         row.insert(0, frame_ctr)
                         #spine-hip registration
                         #spine-hip_x
-                        row.append((float(row[5])+ float(row[8]))/2)
+                        row.append((float(row[71])+ float(row[74]))/2)
                         #spine-hip_y
-                        row.append((float(row[6])+ float(row[9]))/2)
+                        row.append((float(row[72])+ float(row[75]))/2)
                         #spine-hip_z
-                        row.append((float(row[7])+ float(row[10]))/2)
+                        row.append((float(row[73])+ float(row[76]))/2)
+
+                        #middle-neck_x
+                        row.append((float(row[14])+ float(row[20]))/2)
+                        #middle-neck_y
+                        row.append((float(row[15])+ float(row[21]))/2)
+                        #middle-neck_z
+                        row.append((float(row[16])+ float(row[22]))/2)
                         writer.writerow(row)
                         total_written +=1
                         next_frame+=4
