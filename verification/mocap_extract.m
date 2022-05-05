@@ -116,10 +116,10 @@ rightStrideTime = rightStrideTime.';
 avgStrideTimeR = mean(rightStrideTime);
 
 
-%% Step Time
+%% Step Time //for right first heel strikes
 leftStepTime = [];
 for i = 1:length(rightHeelTime(:,1))
-    leftStepTime(i) = abs(leftHeelTime(i,1) - rightHeelTime(i,1));
+    leftStepTime(i) = abs(leftHeelTime(i,2) - rightHeelTime(i,1));
 end
 
 leftStepTime = leftStepTime.';
@@ -128,14 +128,14 @@ avgStepTimeL = mean(leftStepTime);
 
 rightStepTime = [];
 for i = 1:length(leftHeelTime(:,1))
-    rightStepTime(i) = rightHeelTime(i,2) - leftHeelTime(i,1);
+    rightStepTime(i) = abs(rightHeelTime(i,1) - leftHeelTime(i,1));
 end
 
 rightStepTime = rightStepTime.';
 avgStepTimeR = mean(rightStepTime);
 
 %% Cadence
-cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
+cadence = (60/avgStrideTimeL) + (60/avgStrideTimeR);
 
 
 % Create a table for display purposes
