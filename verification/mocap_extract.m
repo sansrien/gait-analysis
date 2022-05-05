@@ -119,7 +119,7 @@ avgStrideTimeR = mean(rightStrideTime);
 %% Step Time
 leftStepTime = [];
 for i = 1:length(rightHeelTime(:,1))
-    leftStepTime(i) = leftHeelTime(i,2) - rightHeelTime(i,1);
+    leftStepTime(i) = abs(leftHeelTime(i,1) - rightHeelTime(i,1));
 end
 
 leftStepTime = leftStepTime.';

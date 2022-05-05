@@ -202,7 +202,7 @@ rightStrideTime = rightStrideTime.';
 avgStrideTimeR = mean(rightStrideTime);
 
 
-%% Step Time //not correct pa ata?
+%% Step Time 
 leftStepTime = [];
 for i = 1:length(rightHeelTime(:,1))
     leftStepTime(i) = abs(leftHeelTime(i,1) - rightHeelTime(i,1));
