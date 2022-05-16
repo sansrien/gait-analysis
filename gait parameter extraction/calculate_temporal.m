@@ -97,8 +97,8 @@ cadence = (60/avgStrideTimeL) + (60/avgStrideTimeR);
 avgStepLengthL = mean(leftStepLength);
 avgStepLengthR = mean(rightStepLength);
 
-leftGaitSpeed = avgStepLengthL/avgStepTimeL;
-rightGaitSpeed = avgStepLengthR/avgStepTimeR;
+leftGaitSpeed = (avgStepLengthL/1000)/avgStepTimeL;
+rightGaitSpeed = (avgStepLengthR/1000)/avgStepTimeR;
 
 
 % Create a table for display purposes
@@ -126,3 +126,4 @@ fprintf('Right Gait Speed: %f m/s',gait_speed.right)
 save('gait_events.mat','data_extracted','temporal_parameters', 'gait_speed', 'locsL', 'locsR')
 
 clearvars -except gait_events
+end
