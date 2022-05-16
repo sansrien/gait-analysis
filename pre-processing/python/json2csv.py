@@ -4,27 +4,28 @@ import os
 import csv
 #foldername= str(input("Foldername where the json files are located")) #change to folder name 
 #dir_location="examples/output/" + foldername #change to frames directory
-dir_location="vid_out_colab" #change this line
+num=str(input())
+dir_location="p"+num+"s5";#"p2s1" #change this line
 frame_count= len(os.listdir(dir_location))
 
 joints={
     2:"neck",
-    9:"spine-hip",
-    10:"r-hip",
-    11:"r-knee",
-    12:"r-ankle",
-    25:"r-heel",
-    23:"r-bigtoe",
-    24:"r-smalltoe",
-    13:"l-hip",
-    14:"l-knee",
-    15:"l-ankle",
-    22:"l-heel",
-    20:"l-bigtoe",
-    21:"l-smalltoe"
+    9:"spine_hip",
+    10:"r_hip",
+    11:"r_knee",
+    12:"r_ankle",
+    25:"r_heel",
+    23:"r_bigtoe",
+    24:"r_smalltoe",
+    13:"l_hip",
+    14:"l_knee",
+    15:"l_ankle",
+    22:"l_heel",
+    20:"l_bigtoe",
+    21:"l_smalltoe"
 }
 
-csvFileName = "keypoints_colab_fixed2"+".csv" #change
+csvFileName = dir_location+".csv" #change
 with open(csvFileName,'w', encoding='UTF8',newline='') as f: # this will OVERWRITE the existing file
     writer = csv.writer(f)
     #csv headers

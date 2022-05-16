@@ -6,6 +6,7 @@ dir_location=input("Enter location of CSV file:")
 filename=input("Enter file name of MOCAP csv file:")
 rgb_frame_count=int(input("Enter total frames of RGB video file:")) # 1-indexing
 start_frame=int(input("Enter start frame:"))*4 # 1-indexing
+
 print(start_frame)
 #joints dictionary
 joints={
