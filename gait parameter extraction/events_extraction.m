@@ -169,12 +169,13 @@ end
 numgaitL = length(gaitCyclesL)
 numgaitR = length(gaitCyclesR)
 
-
 data_extracted.time = timeVector;
 data_extracted.left = gaitCyclesL;
 data_extracted.right = gaitCyclesR;
+data_extracted.locsL = locsL;
+data_extracted.locsR = locsR;
 
-save('gait_events.mat','data_extracted')
+save('gait_events.mat','data_extracted', 'locsL', 'locsR')
 
 clearvars -except gait_events
 
@@ -186,9 +187,7 @@ clearvars -except gait_events
 % 
 % 
 %gait_events = join(tableLHS,tableRHS);
-% create a variable for number of gait cycles
-numGaitCycleL = length(gaitCyclesL);
-numGaitCycleR = length(gaitCyclesR);
+
 
 
 
