@@ -1,8 +1,8 @@
-function events_extraction()
-clearvars -except gait_events;
+function events_extraction(dataTable)
+
 data_extracted = [];
+
 %% Read input file from pre-processing
-dataTable = readtable('p1s1_processed_switched.csv');
 dataTable.Properties.VariableNames; %to display variable names from file
 
 %% Create time vector
@@ -89,27 +89,12 @@ rightH.yLoc = filtfilt(B,A,rightH.yLoc);
 [pksL, locsL] = findpeaks(leftH.yLoc);
 [pksR, locsR] = findpeaks(rightH.yLoc);
 
-% meanL = mean(pksL);
-% threshL = 0.4*meanL;
-% [pksL, locsL] = findpeaks(leftH.yLoc, 'MinPeakHeight', threshL, 'MinPeakDistance', fs);
-% 
-% meanR = mean(pksR);
-% threshR = 0.4*meanR;
-% %[pksR, locsR] = findpeaks(rightH.yLoc, 'MinPeakHeight', threshR, 'MinPeakDistance', fs);
-% [pksR, locsR] = findpeaks(rightH.yLoc(locsL(1):end), 'MinPeakDistance', fs, 'NPeaks', 5);
-% locsR = locsR + (locsL(1)-1);
-% 
-% ofst = locsR(end)+(round(fs)-1);                                                
-% [pksR(end+1),locsR(end+1)] = max(rightH.yLoc(ofst:end)); 
-% locsR(end) = locsR(end) + ofst;
-
 meanL = mean(pksL);
 threshL = 0.4*meanL;
 [pksL, locsL] = findpeaks(leftH.yLoc, 'MinPeakHeight', threshL, 'MinPeakDistance', fs);
 
 meanR = mean(pksR);
 threshR = 0.4*meanR;
-%[pksR, locsR] = findpeaks(rightH.yLoc, 'MinPeakHeight', threshR, 'MinPeakDistance', fs, 'NPeaks', 4);
 [pksR, locsR] = findpeaks(rightH.yLoc, 'MinPeakHeight', threshR, 'MinPeakDistance', fs);
  
 if leftH.time(locsL(1)) > rightH.time(locsR(1)) && pksR(1) ~= 0
@@ -137,14 +122,14 @@ end
 
 subplot 224
 plot(rightH.time, rightH.yLoc, rightH.time(locsR), pksR, 'or')
-% xlabel('x-coordinates')
-% ylabel('time')
+xlabel('time (s)')
+ylabel('y-coordinate')
 title('Filtered Right Leg Heel Location')
 
 subplot 222
 plot(leftH.time, leftH.yLoc, leftH.time(locsL), pksL, 'or')
-% xlabel('x-coordinates')
-% ylabel('time')
+xlabel('time (s)')
+ylabel('y-coordinate')
 title('Filtered Left Leg Heel Location')
 
 
@@ -166,8 +151,8 @@ for i = 1:length(pksR)
     end
 end
 
-numgaitL = length(gaitCyclesL)
-numgaitR = length(gaitCyclesR)
+numgaitL = length(gaitCyclesL);
+numgaitR = length(gaitCyclesR);
 
 data_extracted.time = timeVector;
 data_extracted.left = gaitCyclesL;
@@ -178,21 +163,3 @@ data_extracted.locsR = locsR;
 save('gait_events.mat','data_extracted', 'locsL', 'locsR')
 
 clearvars -except gait_events
-
-% Create a table for display purposes
-% tableLHS = array2table(gaitCyclesL);
-% tableLHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (x,y)' 'Final Heel Strike (x,y)'};
-% tableRHS = array2table(gaitCyclesR);
-% tableRHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (x,y)' 'Final Heel Strike (x,y)'};
-% 
-% 
-%gait_events = join(tableLHS,tableRHS);
-
-
-
-
-
- 
-
-
-
