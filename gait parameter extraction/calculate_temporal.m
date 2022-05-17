@@ -121,7 +121,7 @@ gait_speed.left = leftGaitSpeed;
 gait_speed.right = rightGaitSpeed;
 
 fprintf('Left Gait Speed: %f m/s \r\n',gait_speed.left)
-fprintf('Right Gait Speed: %f m/s',gait_speed.right)
+fprintf('Right Gait Speed: %f m/s \r\n',gait_speed.right)
 
 save('gait_events.mat','data_extracted','temporal_parameters', 'gait_speed', 'locsL', 'locsR')
 
