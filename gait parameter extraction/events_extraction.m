@@ -97,28 +97,20 @@ meanR = mean(pksR);
 threshR = 0.4*meanR;
 [pksR, locsR] = findpeaks(rightH.yLoc, 'MinPeakHeight', threshR, 'MinPeakDistance', fs);
  
-if leftH.time(locsL(1)) > rightH.time(locsR(1)) && pksR(1) ~= 0
+if leftH.time(locsL(1)) > rightH.time(locsR(1)) && pksR(1) ~= 0 %left first
+    firstyholder = pksR(1);
+    firstxholder = rightH.xLoc(locsR(1));
     pksR(1) = [];
     locsR(1) = [];
-else    
+elseif leftH.time(locsL(1)) < rightH.time(locsR(1)) && pksL(1) ~= 0    %right first
+    firstyholder = pksL(1);
+    firstxholder = leftH.xLoc(locsL(1));
     pksL(1) = [];
     locsL(1) = [];
+else
+    ;
 end
 
-% test plots for heel locations
-% subplot 224
-% plot(rightH.time, rightH.yLoc)
-% hold on
-% scatter(rightH.time(locsR), pksR, 'or')
-% hold off
-% title('Filtered Right Leg Heel Location')
-% 
-% subplot 222
-% plot(leftH.time, leftH.yLoc)
-% hold on
-% scatter(leftH.time(locsL), pksL, 'or')
-% hold off
-% title('Filtered Left Leg Heel Location')
 
 subplot 224
 plot(rightH.time, rightH.yLoc, rightH.time(locsR), pksR, 'or')
@@ -159,6 +151,9 @@ data_extracted.left = gaitCyclesL;
 data_extracted.right = gaitCyclesR;
 data_extracted.locsL = locsL;
 data_extracted.locsR = locsR;
+data_extracted.extrapks = firstyholder;         %for step length
+data_extracted.extralocs = firstxholder;
+
 
 save('gait_events.mat','data_extracted', 'locsL', 'locsR')
 
