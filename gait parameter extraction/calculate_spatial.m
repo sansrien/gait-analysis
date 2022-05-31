@@ -13,6 +13,7 @@ firstxholder = data_extracted.extralocs;
 
 scale = 6.959;
 
+
 % create a variable for number of gait cycles
  numGaitCycleL = length(gaitCyclesL);
  numGaitCycleR = length(gaitCyclesR);
