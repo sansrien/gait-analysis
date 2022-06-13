@@ -51,33 +51,54 @@ avgStrideTimeR = mean(rightStrideTime);
 
 
 %% Step Time
-leftStepTime = [];
-for i = 1:length(rightHeelTime(:,1))
-    leftStepTime(i) = leftHeelTime(i,1) - rightHeelTime(i,1);
+if rightHeelTime(1) < leftHeelTime(1)   %for right first heel strikes
+    leftStepTime = [];
+    for i = 1:length(rightHeelTime(:,1))
+        leftStepTime(i) = abs(leftHeelTime(i,1) - rightHeelTime(i,1));
+    end
+
+    leftStepTime = leftStepTime.';
+    avgStepTimeL = mean(leftStepTime);
+
+
+    rightStepTime = [];
+    for i = 1:length(leftHeelTime(:,1))
+        rightStepTime(i) = abs(rightHeelTime(i,2) - leftHeelTime(i,1));
+    end
+
+    rightStepTime = rightStepTime.';
+    avgStepTimeR = mean(rightStepTime);
+
+else %for left first heel strikes
+    leftStepTime = [];
+    for i = 1:length(rightHeelTime(:,1))
+        leftStepTime(i) = abs(leftHeelTime(i,2) - rightHeelTime(i,1));
+    end
+
+    leftStepTime = leftStepTime.';
+    avgStepTimeL = mean(leftStepTime);
+
+
+    rightStepTime = [];
+    for i = 1:length(leftHeelTime(:,1))
+        rightStepTime(i) = abs(rightHeelTime(i,1) - leftHeelTime(i,1));
+    end
+
+    rightStepTime = rightStepTime.';
+    avgStepTimeR = mean(rightStepTime); 
 end
 
-leftStepTime = leftStepTime.';
-avgStepTimeL = mean(leftStepTime);
-
-
-rightStepTime = [];
-for i = 1:length(leftHeelTime(:,1))
-    rightStepTime(i) = rightHeelTime(i,2) - leftHeelTime(i,1);
-end
-
-rightStepTime = rightStepTime.';
-avgStepTimeR = mean(rightStepTime);
 
 %% Cadence
-cadence = (60/avgStepTimeL) + (60/avgStepTimeR);
+cadence = (60/avgStrideTimeL) + (60/avgStrideTimeR);
 
 
 %% Gait Speed
 avgStepLengthL = mean(leftStepLength);
 avgStepLengthR = mean(rightStepLength);
 
-leftGaitSpeed = avgStepLengthL/avgStepTimeL;
-rightGaitSpeed = avgStepLengthR/avgStepTimeR;
+leftGaitSpeed = (avgStepLengthL/1000)/avgStepTimeL;
+rightGaitSpeed = (avgStepLengthR/1000)/avgStepTimeR;
 
 
 % Create a table for display purposes
@@ -100,8 +121,9 @@ gait_speed.left = leftGaitSpeed;
 gait_speed.right = rightGaitSpeed;
 
 fprintf('Left Gait Speed: %f m/s \r\n',gait_speed.left)
-fprintf('Right Gait Speed: %f m/s',gait_speed.right)
+fprintf('Right Gait Speed: %f m/s \r\n',gait_speed.right)
 
 save('gait_events.mat','data_extracted','temporal_parameters', 'gait_speed', 'locsL', 'locsR')
 
 clearvars -except gait_events
+end

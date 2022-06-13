@@ -1,8 +1,8 @@
-function events_extraction()
-clearvars -except gait_events;
+function events_extraction(dataTable)
+
 data_extracted = [];
+
 %% Read input file from pre-processing
-dataTable = readtable('switched_colab_fixed.csv');
 dataTable.Properties.VariableNames; %to display variable names from file
 
 %% Create time vector
@@ -74,7 +74,7 @@ plot(rightH.time, rightH.yLoc)
 title('Right Leg Heel Location')
 
 fs = (length(timeVector))/(timeVector(length(timeVector)));
-fc = 8;    %from RRL
+fc = 20;    %initially 10 from RRL but increased to 20 to detect the end heelstrikes
 Wn = fc/fs;
 [B, A] = butter(4,Wn,'low');
 leftH.yLoc = filtfilt(B,A,leftH.yLoc);
@@ -89,29 +89,39 @@ rightH.yLoc = filtfilt(B,A,rightH.yLoc);
 [pksL, locsL] = findpeaks(leftH.yLoc);
 [pksR, locsR] = findpeaks(rightH.yLoc);
 
-
 meanL = mean(pksL);
 threshL = 0.4*meanL;
 [pksL, locsL] = findpeaks(leftH.yLoc, 'MinPeakHeight', threshL, 'MinPeakDistance', fs);
 
 meanR = mean(pksR);
 threshR = 0.4*meanR;
-[pksR, locsR] = findpeaks(rightH.yLoc, 'MinPeakHeight', threshR, 'MinPeakDistance', fs, 'NPeaks', 4);
+[pksR, locsR] = findpeaks(rightH.yLoc, 'MinPeakHeight', threshR, 'MinPeakDistance', fs);
+ 
+if leftH.time(locsL(1)) > rightH.time(locsR(1)) && pksR(1) ~= 0 %left first
+    firstyholder = pksR(1);
+    firstxholder = rightH.xLoc(locsR(1));
+    pksR(1) = [];
+    locsR(1) = [];
+elseif leftH.time(locsL(1)) < rightH.time(locsR(1)) && pksL(1) ~= 0    %right first
+    firstyholder = pksL(1);
+    firstxholder = leftH.xLoc(locsL(1));
+    pksL(1) = [];
+    locsL(1) = [];
+else
+    ;
+end
 
 
-% test plots for heel locations
 subplot 224
-plot(rightH.time, rightH.yLoc)
-hold on
-scatter(rightH.time(locsR), pksR, '*')
-hold off
+plot(rightH.time, rightH.yLoc, rightH.time(locsR), pksR, 'or')
+xlabel('time (s)')
+ylabel('y-coordinate')
 title('Filtered Right Leg Heel Location')
 
 subplot 222
-plot(leftH.time, leftH.yLoc)
-hold on
-scatter(leftH.time(locsL), pksL, '*')
-hold off
+plot(leftH.time, leftH.yLoc, leftH.time(locsL), pksL, 'or')
+xlabel('time (s)')
+ylabel('y-coordinate')
 title('Filtered Left Leg Heel Location')
 
 
@@ -133,119 +143,18 @@ for i = 1:length(pksR)
     end
 end
 
+numgaitL = length(gaitCyclesL);
+numgaitR = length(gaitCyclesR);
 
 data_extracted.time = timeVector;
 data_extracted.left = gaitCyclesL;
 data_extracted.right = gaitCyclesR;
 data_extracted.locsL = locsL;
 data_extracted.locsR = locsR;
-
-save('gait_events.mat','data_extracted')
-
-%clearvars -except gait_events
-
-% Create a table for display purposes
-% tableLHS = array2table(gaitCyclesL);
-% tableLHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (x,y)' 'Final Heel Strike (x,y)'};
-% tableRHS = array2table(gaitCyclesR);
-% tableRHS.Properties.VariableNames(1:2) = {'Initial Heel Strike (x,y)' 'Final Heel Strike (x,y)'};
-% 
-% 
-%gait_events = join(tableLHS,tableRHS);
-% create a variable for number of gait cycles
-numGaitCycleL = length(gaitCyclesL);
-numGaitCycleR = length(gaitCyclesR);
-
-%% Calculation of Temporal Parameters
-% Get time associated with all heel strikes
-
-leftHeelTime = zeros(length(locsL)-1, 2);
-for i = 1:length(locsL)
-    if i ~= length(locsL)
-        leftHeelTime(i,1) = leftH.time(locsL(i));
-        leftHeelTime(i,2) = leftH.time(locsL(i+1));
-    end
-end
-
-rightHeelTime = zeros(length(locsR)-1, 2);
-for i = 1:length(locsR)
-    if i ~= length(locsR)
-        rightHeelTime(i,1) = rightH.time(locsR(i));
-        rightHeelTime(i,2) = rightH.time(locsR(i+1));
-    end
-end
+data_extracted.extrapks = firstyholder;         %for step length
+data_extracted.extralocs = firstxholder;
 
 
-%% Stride Time - OK
-leftStrideTime = [];
-for i = 1:length(leftHeelTime(:,1))
-    leftStrideTime(i) = leftHeelTime(i,2) - leftHeelTime(i,1);
-end
+save('gait_events.mat','data_extracted', 'locsL', 'locsR')
 
-leftStrideTime = leftStrideTime.';
-avgStrideTimeL = mean(leftStrideTime);
-
-rightStrideTime = [];
-for i = 1:length(rightHeelTime(:,1))
-    rightStrideTime(i) = rightHeelTime(i,2) - rightHeelTime(i,1);
-end
-
-rightStrideTime = rightStrideTime.';
-avgStrideTimeR = mean(rightStrideTime);
-
-
-%% Step Time 
-if rightHeelTime(1) < leftHeelTime(1)   %for right first heel strikes
-    leftStepTime = [];
-    for i = 1:length(rightHeelTime(:,1))
-        leftStepTime(i) = abs(leftHeelTime(i,1) - rightHeelTime(i,1));
-    end
-
-    leftStepTime = leftStepTime.';
-    avgStepTimeL = mean(leftStepTime);
-
-
-    rightStepTime = [];
-    for i = 1:length(leftHeelTime(:,1))
-        rightStepTime(i) = abs(rightHeelTime(i,2) - leftHeelTime(i,1));
-    end
-
-    rightStepTime = rightStepTime.';
-    avgStepTimeR = mean(rightStepTime);
-
-else %for left first heel strikes
-    leftStepTime = [];
-    for i = 1:length(rightHeelTime(:,1))
-        leftStepTime(i) = abs(leftHeelTime(i,2) - rightHeelTime(i,1));
-    end
-
-    leftStepTime = leftStepTime.';
-    avgStepTimeL = mean(leftStepTime);
-
-
-    rightStepTime = [];
-    for i = 1:length(leftHeelTime(:,1))
-        rightStepTime(i) = abs(rightHeelTime(i,1) - leftHeelTime(i,1));
-    end
-
-    rightStepTime = rightStepTime.';
-    avgStepTimeR = mean(rightStepTime); 
-end
-
-
-%% Cadence
-cadence = (60/avgStrideTimeL) + (60/avgStrideTimeR);
-
-
-% Create a table for display purposes
-tempParams = [leftStrideTime rightStrideTime leftStepTime rightStepTime];
-tableTempParams = array2table(tempParams);
-tableTempParams.Properties.VariableNames(1:4) = {'Left Stride Time' 'Right Stride Time', 'Left Step Time', 'Right Step Time'};
-avgTempParams = [avgStrideTimeL avgStrideTimeR avgStepTimeL avgStepTimeR cadence];
-tableAvgTempParams = array2table(avgTempParams);
-tableAvgTempParams.Properties.VariableNames(1:5) = {'Left Stride Time' 'Right Stride Time', 'Left Step Time', 'Right Step Time', 'Cadence'};
-
-tableAvgTempParams    
-
-
-
+clearvars -except gait_events
